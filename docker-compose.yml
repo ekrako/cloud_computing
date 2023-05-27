@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+
+  meal_api:
+    build: ./meal_api
+    ports:
+      - 5001:5001
+    depends_on:
+      - db
+    environment:
+      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:postgres@db:5432/postgres
+      - DIET_URL=http://diet_api:5002
+
+  diet_api:
+    build: ./diet_api
+    ports:
+      - 5002:5002
+    depends_on:
+      - db
+    environment:
+      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:postgres@db:5432/postgres
+
+volumes:
+  db_data:
