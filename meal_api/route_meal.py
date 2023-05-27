@@ -1,4 +1,7 @@
+import os
 from flask import Blueprint, request, abort
+import requests
+import urllib.parse
 
 from meal import Meal
 from dish import Dish
@@ -51,13 +54,17 @@ def add_meal():
 def get_meals_list():
     """ """
     res = Meal.query
-    for val in request.args:
-        res = (
-            res.filter(getattr(Meal, val) <= request.args[val])
-            if val in ["cal", "sodium", "sugar"]
-            else res
-        )
-    return [meal.to_dict() for meal in res.all()]
+    resp = [meal.to_dict() for meal in res.all()]
+    if "diet" in request.args:
+        diet_url =  os.environ.get("DIET_URL", "http://localhost:5002/diets/")
+        url = urllib.parse.urljoin(diet_url, request.args["diet"])
+        response = requests.get(url)
+        diet = response.json() if response.status_code == 200 else None
+        if diet:
+            resp = [meal for meal in resp if meal["cal"] <= diet["cal"]] if diet.get("cal",None) else resp
+            resp = [meal for meal in resp if meal["sodium"] <= diet["sodium"]] if diet.get("sodium",None) else resp
+            resp = [meal for meal in resp if meal["sugar"] <= diet["sugar"]] if diet.get("sugar",None) else resp
+    return resp
 
 
 def get_meal(meal_id_or_name):
