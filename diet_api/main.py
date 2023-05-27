@@ -1,14 +1,12 @@
 from flask import Flask, render_template
-from route_dish import dish_blueprint
-from route_meal import meal_blueprint
+from route_diet import diet_blueprint
 from db import db
 from werkzeug.exceptions import HTTPException
 import dotenv
 import os
 
 app = Flask(__name__)  # initialize Flask
-app.register_blueprint(dish_blueprint)
-app.register_blueprint(meal_blueprint)
+app.register_blueprint(diet_blueprint)
 
 
 @app.errorhandler(Exception)
@@ -38,6 +36,6 @@ with app.app_context():
 
 if __name__ == "__main__":
     dotenv.load_dotenv()
-    port = int(os.environ.get("PORT", 5001))
+    port = int(os.environ.get("PORT", 5002))
     host = os.environ.get("HOST", "0.0.0.0")
     app.run(debug=True, port=port, host=host)
