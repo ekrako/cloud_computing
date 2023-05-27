@@ -68,9 +68,8 @@ def get_meals_list():
 
 
 def get_meal(meal_id_or_name):
-    meal = Meal.query.filter_by(id=meal_id_or_name).first()
-    if meal is not None:
-        return meal
+    if meal_id_or_name.isdigit():
+        return Meal.query.filter_by(id=meal_id_or_name).first()
     return Meal.query.filter_by(name=meal_id_or_name).first()
 
 

@@ -30,6 +30,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["DEBUG"] = True
+print(app.config["SQLALCHEMY_DATABASE_URI"])
+
 db.init_app(app)
 with app.app_context():
     db.create_all()

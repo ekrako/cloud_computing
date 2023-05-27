@@ -22,7 +22,7 @@ def add_dish():
 
     dish_name = request.json["name"]
 
-    if Dish.query.filter_by(id=dish_name).first() is not None:
+    if Dish.query.filter_by(name=dish_name).first() is not None:
         return "-2", 422
     try:
         dish = Dish(dish_name)
@@ -53,13 +53,13 @@ def get_dishs_list():
             if val in ["cal", "sodium", "sugar"]
             else res
         )
-    return {dish.id:dish.to_dict() for dish in res.all()}
+    return [dish.to_dict() for dish in res.all()]
 
 
 def get_dish(dish_id_or_name):
-    dish = Dish.query.filter_by(id=dish_id_or_name).first()
-    if dish is not None:
-        return dish
+    print("~"*30,dish_id_or_name)
+    if dish_id_or_name.isdigit():
+        return Dish.query.filter_by(id=dish_id_or_name).first()
     return Dish.query.filter_by(name=dish_id_or_name).first()
 
 
@@ -71,9 +71,8 @@ def get_dish_route(dish_id_or_name):
     :param dish_id_or_name: dish id or dish name
     :return:
     """
-    dish = Dish.query.filter_by(id=dish_id_or_name).first()
-    if dish is None:
-        dish = Dish.query.filter_by(name=dish_id_or_name).first()
+    print("~"*30,dish_id_or_name)
+    dish = get_dish(dish_id_or_name)
     return ("-5", 404) if dish is None else dish.to_dict()
 
 
@@ -85,9 +84,7 @@ def delete_dish(dish_id_or_name):
     :param dish_id_or_name: dish id or dish name
     :return: dish id of the deleted dish
     """
-    dish = Dish.query.filter_by(id=dish_id_or_name).first()
-    if dish is None:
-        dish = Dish.query.filter_by(name=dish_id_or_name).first()
+    dish = get_dish(dish_id_or_name)
     if dish is None:
         return "-5", 404
     dish_id = dish.id

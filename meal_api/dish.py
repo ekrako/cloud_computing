@@ -36,7 +36,6 @@ class Dish(db.Model):
         return {
             "name": self.name,
             "cal": self.cal,
-            "size": self.size,
             "sodium": self.sodium,
             "sugar": self.sugar,
             "size": self.size,

@@ -30,6 +30,7 @@ app.config.from_object
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "DATABASE_URL", "sqlite:///meal_api.db"
 )
+print(app.config["SQLALCHEMY_DATABASE_URI"])
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["DEBUG"] = True
 db.init_app(app)

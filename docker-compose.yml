@@ -11,21 +11,23 @@ services:
       - POSTGRES_DB=postgres
     networks:
       - db_network
+      - nginx_network
     restart: unless-stopped
 
-  meal_api:
+  meal_app:
     build: ./meal_api
-    ports:
-      - 5001:5001
     depends_on:
       - db
     environment:
-      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:postgres@db:5432/postgres
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
       - DIET_URL=http://diet_api:5002
     networks:
       - db_network
       - nginx_network
     restart: unless-stopped
+    deploy:
+      mode: replicated
+      replicas: 2
 
   diet_api:
     build: ./diet_api
@@ -34,12 +36,24 @@ services:
     depends_on:
       - db
     environment:
-      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:postgres@db:5432/postgres
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
     networks:
       - db_network
       - nginx_network
     restart: unless-stopped
 
+  meal_api:
+    image: nginx:latest
+    volumes:
+      - ./nginx/meals-nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 5001:5001
+    depends_on:
+      - meal_app
+    networks:
+      - nginx_network
+    restart: unless-stopped
+  
   nginx:
     image: nginx:latest
     volumes:

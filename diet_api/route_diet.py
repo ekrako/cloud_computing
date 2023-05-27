@@ -25,7 +25,7 @@ def add_dish():
     diet_sodium = request.json.get("sodium", None)
     diet_sugar = request.json.get("sugar", None)
 
-    if Diet.query.filter_by(id=diet_name).first() is not None:
+    if Diet.query.filter_by(name=diet_name).first() is not None:
         return f"Diet with {diet_name} already exists", 422
     try:
         diet = Diet(name=diet_name, cal=diet_cal, sodium=diet_sodium, sugar=diet_sugar)
@@ -57,13 +57,6 @@ def get_dishes_list():
             else res
         )
     return [dish.to_dict() for dish in res.all()]
-
-
-def get_dish(dish_id_or_name):
-    dish = Diet.query.filter_by(id=dish_id_or_name).first()
-    if dish is not None:
-        return dish
-    return Diet.query.filter_by(name=dish_id_or_name).first()
 
 
 @diet_blueprint.route("/diets/<diet_name>", methods=["GET"])
