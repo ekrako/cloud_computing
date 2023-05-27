@@ -53,7 +53,7 @@ def get_dishs_list():
             if val in ["cal", "sodium", "sugar"]
             else res
         )
-    return [dish.to_dict() for dish in res.all()]
+    return {dish.id:dish.to_dict() for dish in res.all()}
 
 
 def get_dish(dish_id_or_name):
