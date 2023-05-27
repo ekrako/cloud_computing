@@ -9,6 +9,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
+    networks:
+      - db_network
+    restart: unless-stopped
 
   meal_api:
     build: ./meal_api
@@ -19,6 +22,10 @@ services:
     environment:
       - SQLALCHEMY_DATABASE_URI=postgresql://postgres:postgres@db:5432/postgres
       - DIET_URL=http://diet_api:5002
+    networks:
+      - db_network
+      - nginx_network
+    restart: unless-stopped
 
   diet_api:
     build: ./diet_api
@@ -28,6 +35,27 @@ services:
       - db
     environment:
       - SQLALCHEMY_DATABASE_URI=postgresql://postgres:postgres@db:5432/postgres
+    networks:
+      - db_network
+      - nginx_network
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    depends_on:
+      - meal_api
+      - diet_api
+    networks:
+      - nginx_network
+    restart: unless-stopped
 
 volumes:
   db_data:
+
+networks:
+  db_network:
+  nginx_network:
