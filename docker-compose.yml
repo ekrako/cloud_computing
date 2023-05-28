@@ -20,7 +20,7 @@ services:
       - db
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
-      - DIET_URL=http://diet_api:5002
+      - DIET_URL=http://diet_api:5002/diets/
     networks:
       - db_network
       - nginx_network

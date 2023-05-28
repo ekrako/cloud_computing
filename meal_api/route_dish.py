@@ -57,8 +57,7 @@ def get_dishs_list():
 
 
 def get_dish(dish_id_or_name):
-    print("~"*30,dish_id_or_name)
-    if dish_id_or_name.isdigit():
+    if str(dish_id_or_name).isdigit():
         return Dish.query.filter_by(id=dish_id_or_name).first()
     return Dish.query.filter_by(name=dish_id_or_name).first()
 

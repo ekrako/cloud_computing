@@ -7,6 +7,7 @@ from meal import Meal
 from dish import Dish
 from db import db
 from route_dish import get_dish
+from flask import current_app
 
 meal_blueprint = Blueprint("meal_blueprint", __name__)
 
@@ -58,12 +59,14 @@ def get_meals_list():
     if "diet" in request.args:
         diet_url =  os.environ.get("DIET_URL", "http://localhost:5002/diets/")
         url = urllib.parse.urljoin(diet_url, request.args["diet"])
+        current_app.logger.info(url)
         response = requests.get(url)
         diet = response.json() if response.status_code == 200 else None
-        if diet:
-            resp = [meal for meal in resp if meal["cal"] <= diet["cal"]] if diet.get("cal",None) else resp
-            resp = [meal for meal in resp if meal["sodium"] <= diet["sodium"]] if diet.get("sodium",None) else resp
-            resp = [meal for meal in resp if meal["sugar"] <= diet["sugar"]] if diet.get("sugar",None) else resp
+        if diet is None:
+            return response.text, response.status_code
+        resp = [meal for meal in resp if meal["cal"] <= diet["cal"]] if diet.get("cal",None) else resp
+        resp = [meal for meal in resp if meal["sodium"] <= diet["sodium"]] if diet.get("sodium",None) else resp
+        resp = [meal for meal in resp if meal["sugar"] <= diet["sugar"]] if diet.get("sugar",None) else resp
     return resp
 
 
